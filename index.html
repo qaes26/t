@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>رحلة رندا | عالم الحب</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;700&family=Amiri:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-pink: #ff4d6d;
+            --deep-purple: #1a0a1f;
+        }
+
+        body {
+            font-family: 'Cairo', sans-serif;
+            background: #0a0a0c;
+            color: white;
+            overflow: hidden; 
+            margin: 0;
+            height: 100vh;
+        }
+
+        .screen {
+            height: 100vh;
+            width: 100%;
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            position: absolute;
+            top: 0;
+            left: 0;
+            transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .screen.active {
+            display: flex;
+            animation: fadeIn 0.8s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 40px;
+            padding: 3rem;
+            box-shadow: 0 15px 50px rgba(0,0,0,0.6);
+            max-width: 90%;
+            width: 550px;
+            text-align: center;
+            position: relative;
+        }
+
+        #star-canvas {
+            position: fixed;
+            top: 0; left: 0; z-index: -1;
+        }
+
+        .poem-text {
+            font-family: 'Amiri', serif;
+            font-size: 2rem;
+            line-height: 1.8;
+            color: #ffd1dc;
+            min-height: 160px;
+            text-shadow: 0 0 10px rgba(255, 77, 109, 0.3);
+        }
+
+        .pass-input {
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid rgba(255, 77, 109, 0.3);
+            border-radius: 20px;
+            padding: 1.2rem;
+            width: 100%;
+            text-align: center;
+            font-size: 1.8rem;
+            color: white;
+            letter-spacing: 0.8rem;
+            outline: none;
+            transition: all 0.3s;
+        }
+
+        .pass-input:focus {
+            border-color: var(--primary-pink);
+            box-shadow: 0 0 15px rgba(255, 77, 109, 0.4);
+        }
+
+        .nav-btn {
+            background: var(--primary-pink);
+            padding: 1rem 2.5rem;
+            border-radius: 50px;
+            font-weight: bold;
+            transition: all 0.3s;
+            margin-top: 20px;
+            color: white;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+        }
+
+        .nav-btn:hover {
+            transform: translateY(-5px) scale(1.05);
+            box-shadow: 0 10px 20px rgba(255, 77, 109, 0.4);
+        }
+
+        /* --- أنيميشن الدبدوب المتطور --- */
+        .bear-container {
+            width: 280px;
+            height: 280px;
+            position: relative;
+            margin: 0 auto;
+        }
+
+        .bear-head {
+            animation: headTilt 4s infinite ease-in-out;
+            transform-origin: bottom center;
+        }
+
+        @keyframes headTilt {
+            0%, 100% { transform: rotate(0deg); }
+            50% { transform: rotate(5deg); }
+        }
+
+        .bear-arm-left {
+            animation: waveLeft 3s infinite ease-in-out;
+            transform-origin: 145px 130px;
+        }
+
+        .bear-arm-right {
+            animation: waveRight 3.5s infinite ease-in-out;
+            transform-origin: 55px 130px;
+        }
+
+        @keyframes waveLeft {
+            0%, 100% { transform: rotate(0deg); }
+            50% { transform: rotate(-10deg); }
+        }
+
+        @keyframes waveRight {
+            0%, 100% { transform: rotate(0deg); }
+            50% { transform: rotate(10deg); }
+        }
+
+        .eye-blink {
+            animation: blink 5s infinite;
+        }
+
+        @keyframes blink {
+            0%, 95%, 100% { transform: scaleY(1); }
+            97% { transform: scaleY(0.1); }
+        }
+
+        .heart-container {
+            animation: float 2s infinite ease-in-out;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .heart-main {
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.08); }
+        }
+
+        .text-gradient {
+            background: linear-gradient(to right, #ff4d6d, #ff8fa3);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+    </style>
+</head>
+<body>
+
+    <canvas id="star-canvas"></canvas>
+
+    <!-- الشاشة الأولى: الأشعار -->
+    <div id="screen-1" class="screen active">
+        <div class="glass-panel">
+            <h2 class="text-pink-400 text-sm mb-6 tracking-[0.3em] font-bold">باقة ورد لقلب رندا</h2>
+            <div id="poem-content" class="poem-text mb-10 transition-opacity duration-700">
+                <!-- جاري التحميل -->
+            </div>
+            <button onclick="nextScreen(2)" class="nav-btn">
+                تابعي المفاجأة 💖
+            </button>
+        </div>
+    </div>
+
+    <!-- الشاشة الثانية: كلمة السر -->
+    <div id="screen-2" class="screen">
+        <div class="glass-panel">
+            <h2 class="text-3xl font-bold mb-6 text-gradient">رندا الغالية 🌸</h2>
+            <p class="mb-8 opacity-90 text-xl font-bold">اكتب كلمة سر لأكثر سنة بتعني إلنا</p>
+            <input type="text" id="passwordField" class="pass-input" placeholder="السنة هنا" maxlength="4" autocomplete="off">
+            <div id="passwordMessage" class="mt-6 text-xl font-bold transition-all duration-300 min-h-[30px]"></div>
+            
+            <div class="flex flex-col gap-4 items-center mt-8">
+                 <button onclick="checkPassword()" class="nav-btn px-12">تحقق</button>
+                 <button id="nextToThree" onclick="nextScreen(3)" class="nav-btn px-10 bg-purple-600 hidden animate-bounce">
+                     رؤية المفاجأة 🐾
+                 </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- الشاشة الثالثة: الدبدوب المتحرك -->
+    <div id="screen-3" class="screen">
+        <div class="glass-panel">
+            <h2 class="text-2xl font-bold mb-8 text-pink-400">هدية بسيطة لقلبكِ</h2>
+            
+            <div class="bear-container">
+                <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+                    <!-- الظل السفلي -->
+                    <ellipse cx="100" cy="185" rx="50" ry="10" fill="black" opacity="0.1" />
+                    
+                    <!-- الجسم -->
+                    <circle cx="100" cy="140" r="45" fill="#8d6e63" />
+                    
+                    <!-- اليدين -->
+                    <circle class="bear-arm-left" cx="145" cy="135" r="15" fill="#795548" />
+                    <circle class="bear-arm-right" cx="55" cy="135" r="15" fill="#795548" />
+
+                    <!-- الرأس مع الأنيميشن -->
+                    <g class="bear-head">
+                        <circle cx="100" cy="85" r="40" fill="#a1887f" />
+                        <!-- الأذنان -->
+                        <circle cx="70" cy="60" r="12" fill="#8d6e63" />
+                        <circle cx="130" cy="60" r="12" fill="#8d6e63" />
+                        <!-- ملامح الوجه -->
+                        <g class="eye-blink">
+                            <circle cx="85" cy="80" r="4" fill="#2d2d2d" />
+                            <circle cx="115" cy="80" r="4" fill="#2d2d2d" />
+                        </g>
+                        <!-- الأنف والفم -->
+                        <ellipse cx="100" cy="95" rx="10" ry="7" fill="#f5f5f5" opacity="0.4" />
+                        <path d="M100 95 L100 102 M95 105 Q100 110 105 105" stroke="#3e2723" fill="none" stroke-width="2"/>
+                        <circle cx="100" cy="95" r="4" fill="#3e2723" />
+                    </g>
+                    
+                    <!-- القلب المحمول مع الحرف R -->
+                    <g class="heart-container" transform="translate(100, 140)">
+                        <g class="heart-main">
+                            <path d="M0 25 C -25 -15, -60 -15, -60 25 C -60 65, 0 100, 0 100 C 0 100, 60 65, 60 25 C 60 -15, 25 -15, 0 25" 
+                                  fill="#ff4d6d" transform="scale(0.7) translate(0, -60)"/>
+                            <text x="0" y="5" font-family="Cairo" font-weight="bold" font-size="28" fill="white" text-anchor="middle">R</text>
+                        </g>
+                    </g>
+                </svg>
+            </div>
+
+            <p class="mt-8 text-2xl italic font-serif text-pink-100">"أنتِ عالمي كله يا رندا"</p>
+            <button onclick="nextScreen(1)" class="mt-8 text-sm opacity-40 hover:opacity-100 underline cursor-pointer">العودة للبداية</button>
+        </div>
+    </div>
+
+    <script>
+        // --- نجوم الخلفية ---
+        const canvas = document.getElementById('star-canvas');
+        const ctx = canvas.getContext('2d');
+        let stars = [];
+
+        function resize() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resize);
+        resize();
+
+        class Star {
+            constructor() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+                this.size = Math.random() * 2;
+                this.speed = Math.random() * 0.3;
+                this.alpha = Math.random();
+            }
+            draw() {
+                ctx.fillStyle = `rgba(255, 255, 255, ${this.alpha})`;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fill();
+                this.y += this.speed;
+                if (this.y > canvas.height) this.y = 0;
+            }
+        }
+
+        for (let i = 0; i < 200; i++) stars.push(new Star());
+
+        function animate() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            stars.forEach(s => s.draw());
+            requestAnimationFrame(animate);
+        }
+        animate();
+
+        // --- نظام الأشعار ---
+        const poems = [
+            "رندا.. يا لؤلؤةً في بحرِ عيني.. <br> يا فجرَ عمريَ الحالم",
+            "بين الحروفِ اسمُ رندا يزهو.. <br> كأنَّهُ الوردُ في البستانِ ناعم",
+            "أحببتُ فيكِ الروحَ قبلَ ملامحٍ.. <br> يا جـنةً حُـفّت بالأمـاني",
+            "رندا.. كأنكِ صُغتِ من نـورٍ.. <br> لتمسحي عن قلبي كلَّ الأحزانِ",
+            "2025 عامٌ بلقياكِ اكتمل.. <br> يا نبعَ حُبٍّ لا يخالطه الكلل"
+        ];
+        let poemIdx = 0;
+
+        function startPoems() {
+            const container = document.getElementById('poem-content');
+            if(!container) return;
+            
+            container.innerHTML = poems[poemIdx];
+            
+            setInterval(() => {
+                poemIdx = (poemIdx + 1) % poems.length;
+                container.style.opacity = 0;
+                setTimeout(() => {
+                    container.innerHTML = poems[poemIdx];
+                    container.style.opacity = 1;
+                }, 700);
+            }, 5000);
+        }
+        startPoems();
+
+        // --- التنقل بين الشاشات ---
+        function nextScreen(num) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.getElementById(`screen-${num}`).classList.add('active');
+        }
+
+        // --- التحقق من كلمة السر (2025) ---
+        function checkPassword() {
+            const input = document.getElementById('passwordField').value.trim();
+            const message = document.getElementById('passwordMessage');
+            const nextBtn = document.getElementById('nextToThree');
+
+            if (input === "2025") {
+                message.innerHTML = "أصبتِ يا رندا! بحبك ❤️";
+                message.style.color = "#ff4d6d";
+                nextBtn.classList.remove('hidden');
+                spawnHearts();
+            } else {
+                message.innerHTML = "خطأ.. حاولي مرة ثانية يا رندا";
+                message.style.color = "#888";
+            }
+        }
+
+        function spawnHearts() {
+            for(let i=0; i<30; i++) {
+                const h = document.createElement('div');
+                h.innerHTML = ["❤️", "💖", "🌸", "✨"][Math.floor(Math.random()*4)];
+                h.style.position = 'fixed';
+                h.style.left = Math.random() * 100 + 'vw';
+                h.style.top = '110vh';
+                h.style.fontSize = Math.random() * 25 + 15 + 'px';
+                h.style.zIndex = '100';
+                h.style.pointerEvents = 'none';
+                h.style.transition = `all ${Math.random() * 2 + 3}s cubic-bezier(0.2, 0.8, 0.4, 1)`;
+                document.body.appendChild(h);
+                
+                setTimeout(() => {
+                    h.style.transform = `translateY(-120vh) translateX(${Math.random()*100 - 50}px) rotate(${Math.random() * 720}deg)`;
+                    h.style.opacity = '0';
+                }, 50);
+                setTimeout(() => h.remove(), 5000);
+            }
+        }
+
+    </script>
+</body>
+</html>
+
